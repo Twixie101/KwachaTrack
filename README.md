@@ -29,4 +29,4 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Run the app
-python app.py
+python manage.py
