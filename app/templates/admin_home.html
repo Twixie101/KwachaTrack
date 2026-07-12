@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="p-8">
+    <h1 class="text-2xl font-bold text-white mb-8">Admin Control Center</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-indigo-900/20 border border-indigo-500/30 p-6 rounded-xl">
+            <h3 class="text-indigo-400 text-sm font-semibold">Total Projects</h3>
+            <p class="text-3xl text-white font-bold">{{ total_projects }}</p>
+        </div>
+        
+        <div class="col-span-2 space-y-4">
+            <a href="{{ url_for('admin.add_transaction') }}" class="block p-4 bg-slate-800 rounded-lg text-white hover:bg-slate-700">
+                + Add Financial Transaction
+            </a>
+            <a href="{{url_for('admin.verify_reports')}}" class="block p-4 bg-slate-800 rounded-lg text-white hover:bg-slate-700">
+                Review Citizen Reports
+            </a>
+
+            <a href="{{ url_for('admin.manage_projects') }}" class="block p-4 bg-slate-800 rounded-lg text-white hover:bg-slate-700">
+                Manage Projects
+            <p class="text-slate-400">Add or edit community development projects.</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

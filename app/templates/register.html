@@ -1,0 +1,54 @@
+<!-- app/templates/register.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-6">
+        <div class="p-5 glass-card">
+            <h3 class="fw-bold text-white text-center mb-2">Create Observer <span class="text-success">Account</span></h3>
+            <p class="text-muted small text-center mb-4">Join the national open data project to monitor CDF fund distribution points.</p>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        <div class="alert alert-{{ category }} small py-2">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('auth.register') }}">
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase">Full Legal Name</label>
+                    <input type="text" name="full_name" class="form-control bg-dark text-black border-secondary" required placeholder="e.g. Chileshe Mwamba">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase">Email Address</label>
+                    <input type="email" name="email" class="form-control bg-dark text-black border-secondary" required placeholder="yourname@domain.zm">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted small text-uppercase">Primary Voting Constituency</label>
+                    <select name="constituency_id" class="form-select bg-dark text-black border-secondary" required>
+                        <option value="" disabled selected>Select your local constituency...</option>
+                        {% for c in constituencies %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small text-uppercase">Secure Account Password</label>
+                    <input type="password" name="password" class="form-control bg-dark text-black border-secondary" required placeholder="••••••••">
+                    <div class="form-text text-muted micro-text">Passwords are protected using industry-standard cryptographic hashing.</div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-3">Register My Account</button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <span class="small text-muted">Already registered? <a href="{{ url_for('auth.login') }}" class="text-warning text-decoration-none fw-bold">Login here</a></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

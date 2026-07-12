@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold text-white mb-6">Gemini Transparency Audit</h1>
+
+    <!-- 1. Raw text container -->
+    <div id="audit-content" class="hidden">
+        {{ audit_text }}
+    </div>
+
+    <!-- 2. Formatted container with style override -->
+    <style>
+        #rendered-audit pre {
+            background-color: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            font-family: inherit !important;
+            color: inherit !important;
+            white-space: pre-wrap !important;
+        }
+        #rendered-audit code {
+            background-color: transparent !important;
+            padding: 0 !important;
+            color: inherit !important;
+        }
+    </style>
+    
+    <div id="rendered-audit" class="prose prose-invert prose-emerald max-w-none bg-slate-900 p-8 rounded-xl shadow-lg border border-slate-800">
+        <!-- AI report will be injected here -->
+    </div>
+
+    <!-- 3. Script to parse Markdown -->
+    <script>
+        document.getElementById('rendered-audit').innerHTML = 
+            marked.parse(document.getElementById('audit-content').innerText);
+    </script>
+
+    <!-- Navigation -->
+    <div class="mt-8">
+        <a href="{{ url_for('citizen.track_project_detail', project_id=project.id) }}" 
+           class="text-slate-400 hover:text-white transition-colors">
+            &larr; Back to Project Timeline
+        </a>
+    </div>
+</div>
+{% endblock %}

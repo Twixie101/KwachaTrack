@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="md:flex md:items-center md:justify-between mb-8">
+    <div class="min-w-0 flex-1">
+        <h2 class="text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl tracking-tight">National Budget Allocation Control</h2>
+        <p class="mt-1 text-sm text-slate-400">Real-time analytical visualization tracking provincial development fund disbursement loops.</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+    <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 backdrop-blur-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Aggregated CDF Allocated</span>
+            <span class="material-symbols-outlined text-emerald-500">payments</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-semibold tracking-tight text-white font-mono">
+                ZMW {{ "{:,.2f}".format(total_allocated) }}
+            </span>
+            <span class="text-xs font-medium text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                {{ completion_rate }}% Complete Rate
+            </span>
+        </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 backdrop-blur-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Audited Expenditure</span>
+            <span class="material-symbols-outlined text-amber-500">receipt_long</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-semibold tracking-tight text-white font-mono">
+                ZMW {{ "{:,.2f}".format(total_expended) }}
+            </span>
+            <span class="text-xs font-medium text-slate-400 font-mono">
+                Bal: ZMW {{ "{:,.2f}".format(remaining_balance) }}
+            </span>
+        </div>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40 p-6 backdrop-blur-sm">
+        <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Tracked Projects</span>
+            <span class="material-symbols-outlined text-sky-400">analytics</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+            <span class="text-3xl font-semibold tracking-tight text-white font-mono">
+                {{ total_projects }}
+            </span>
+            <span class="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                {{ completed_projects }} Done
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="lg:col-span-2 rounded-xl border border-slate-800 bg-slate-900/20 overflow-hidden h-[450px] flex flex-col">
+        <div class="border-b border-slate-800 bg-slate-900/40 px-5 py-4 flex items-center justify-between">
+            <h3 class="font-semibold text-sm tracking-tight text-white">Geospatial Distribution Vector</h3>
+            <span class="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+        
+        <div id="zambiaCdfMap" class="w-full flex-grow bg-slate-900/80 flex items-center justify-between text-slate-500 text-sm z-10">
+            <span class="mx-auto block text-center">
+                <span class="material-symbols-outlined text-4xl mb-2 block text-slate-600 animate-spin">progress_activity</span>
+                Hydrating Leaflet Matrix Canvas...
+            </span>
+        </div>
+    </div>
+
+    <div class="rounded-xl border border-slate-800 bg-slate-900/20 overflow-hidden flex flex-col p-5 space-y-4">
+        <div>
+            <h3 class="font-semibold text-sm tracking-tight text-white mb-1">Status Classification Breakdown</h3>
+            <p class="text-xs text-slate-400">Operational status counters for all regional constituent allocations.</p>
+        </div>
+        
+        <div class="space-y-3 font-mono text-sm">
+            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/40 border border-slate-800/60">
+                <span class="text-amber-400 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-amber-400"></span> In Progress
+                </span>
+                <span class="text-white font-bold">{{ in_progress_projects }}</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/40 border border-slate-800/60">
+                <span class="text-emerald-400 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Completed
+                </span>
+                <span class="text-white font-bold">{{ completed_projects }}</span>
+            </div>
+
+            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/40 border border-slate-800/60">
+                <span class="text-rose-400 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-rose-400"></span> Abandoned
+                </span>
+                <span class="text-white font-bold">{{ abandoned_projects }}</span>
+            </div>
+        </div>
+
+        <div class="text-center pt-2">
+            <p class="text-xs text-slate-500">
+                Data generated autonomously via cryptographic audit trail sync.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+{% endblock %}

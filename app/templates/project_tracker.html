@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block content %}
+
+<nav class="mb-6" aria-label="Breadcrumb">
+    <ol class="flex items-center space-x-2 text-xs font-medium text-slate-400">
+        <li><a href="{{ url_for('core.national_dashboard') }}" class="hover:text-emerald-400 transition-colors">National Dashboard</a></li>
+        <li><span class="text-slate-600">/</span></li>
+        <li class="text-white font-semibold truncate max-w-[200px] md:max-w-none" aria-current="page">{{ project.title }}</li>
+    </ol>
+</nav>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="lg:col-span-2 space-y-6">
+        
+        <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-6 backdrop-blur-sm">
+            <div class="md:flex md:items-center md:justify-between gap-4 mb-4">
+                <h2 class="text-xl md:text-2xl font-bold text-white tracking-tight">{{ project.title }}</h2>
+                <span class="inline-flex items-center shrink-0 rounded-md px-3 py-1 text-xs font-semibold ring-1 ring-inset 
+                    {% set status_str = project.status.value|string|upper if project.status.value else project.status|string|upper %}
+                    {% if 'COMPLETED' in status_str %}bg-emerald-500/10 text-emerald-400 ring-emerald-500/20
+                    {% elif 'ABANDONED' in status_str %}bg-rose-500/10 text-rose-400 ring-rose-500/20
+                    {% else %}bg-amber-500/10 text-amber-400 ring-amber-500/20{% endif %}">
+                    {{ project.status.value if project.status.value else project.status }}
+                </span>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed">{{ project.description }}</p>
+            
+            <div class="my-6 border-t border-slate-800/80"></div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono">
+                <div class="rounded-lg border border-slate-800 bg-slate-950 p-4 text-center">
+                    <span class="block text-[10px] uppercase font-sans tracking-wider text-slate-500 mb-1">Approved Budget</span>
+                    <span class="text-base font-bold text-white">ZMW {{ "{:,.2f}".format(project.budget) }}</span>
+                </div>
+                <div class="rounded-lg border border-slate-800 bg-slate-950 p-4 text-center">
+                    <span class="block text-[10px] uppercase font-sans tracking-wider text-slate-500 mb-1">Total Expended</span>
+                    <span class="text-base font-bold text-amber-400">ZMW {{ "{:,.2f}".format(project.expended_amount) }}</span>
+                </div>
+                <div class="rounded-lg border border-slate-800 bg-slate-950 p-4 text-center">
+                    <span class="block text-[10px] uppercase font-sans tracking-wider text-slate-500 mb-1">Remaining Escrow</span>
+                    <span class="text-base font-bold {% if budget_variance >= 0 %}text-emerald-400{% else %}text-rose-400{% endif %}">
+                        ZMW {{ "{:,.2f}".format(budget_variance) }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <div class="flex items-center justify-between text-xs mb-2">
+                    <span class="text-slate-400">Verified Physical Infrastructure Milestone Completion</span>
+                    <span class="text-white font-bold font-mono">{{ project.progress_percentage }}%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+                    <div class="bg-emerald-500 h-3 rounded-full transition-all duration-500" style="width: {{ project.progress_percentage | default(0) }}%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="rounded-xl border border-amber-500/30 bg-amber-500/5 p-6 backdrop-blur-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="space-y-1">
+                <h5 class="text-amber-400 font-semibold text-base flex items-center gap-2">Run Gemini AI Transparency Audit</h5>
+                <p class="text-xs text-slate-400 max-w-xl leading-relaxed">Leverage AI to cross-reference spending patterns against standard infrastructure costs.</p>
+            </div>
+            <form action="{{ url_for('citizen.run_ai_audit', project_id=project.id) }}" method="POST" class="w-full md:w-auto shrink-0">
+                <button type="submit" class="w-full md:w-auto inline-flex justify-center items-center rounded-lg bg-amber-500 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-amber-400 transition-all">Generate AI Audit Report</button>
+            </form>
+        </div>
+
+        <div class="mt-8">
+            <h4 class="text-white font-semibold text-sm tracking-wide uppercase mb-4 text-slate-300">Transaction Ledger</h4>
+            <div class="rounded-xl border border-slate-800 bg-slate-950/50 overflow-hidden">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-slate-900 text-slate-400">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold">Date</th>
+                            <th class="px-4 py-3 font-semibold">Recipient</th>
+                            <th class="px-4 py-3 font-semibold">Description</th>
+                            <th class="px-4 py-3 font-semibold text-right">Amount (ZMW)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-slate-300">
+                        {% for tx in transactions %}
+                        <tr>
+                            <td class="px-4 py-3 font-mono">{{ tx.transaction_date.strftime('%Y-%m-%d') if tx.transaction_date else 'N/A' }}</td>
+                            <td class="px-4 py-3">{{ tx.recipient }}</td>
+                            <td class="px-4 py-3">{{ tx.description }}</td>
+                            <td class="px-4 py-3 text-right font-mono text-amber-400">{{ "{:,.2f}".format(tx.amount) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="px-4 py-4 text-center text-slate-500 italic">No financial ledger entries found for this project.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 backdrop-blur-sm">
+            <h5 class="text-white font-semibold text-sm mb-2">Civil Export Utility Tools</h5>
+            <p class="text-xs text-slate-400 mb-4">Download machine-readable transaction records.</p>
+            <a href="{{ url_for('citizen.export_report_csv', project_id=project.id) }}" 
+               class="w-full inline-flex justify-center items-center rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 py-2.5 text-xs font-semibold transition-all">
+               Download Spreadsheet Data (.CSV)
+            </a>    
+       </div>
+
+        <div class="rounded-xl border border-slate-800 bg-slate-900/40 p-5 backdrop-blur-sm flex flex-col h-[380px]">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+                <h5 class="text-white font-semibold text-sm">Public Field Reports</h5>
+                <span class="inline-flex items-center rounded-md bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-400 font-mono">{{ feedbacks|length }} Active Logs</span>
+            </div>
+            
+            <div class="space-y-3 overflow-y-auto flex-grow pr-1 custom-scrollbar">
+                {% for item in feedbacks %}
+                <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-3.5 space-y-2">
+                    <div class="flex items-center justify-between text-[11px]">
+                        <strong class="text-sky-400 uppercase tracking-wider font-semibold">{{ item.feedback_type }}</strong>
+                        <span class="inline-flex items-center rounded px-1.5 py-0.5 font-medium text-[9px] font-mono 
+                            {% if item.verification_status == 'VERIFIED' %}bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20
+                            {% elif item.verification_status == 'REJECTED' %}bg-rose-500/10 text-rose-400 ring-1 ring-rose-500/20
+                            {% else %}bg-amber-500/10 text-amber-400 ring-1 ring-amber-500/20{% endif %}">
+                            {{ item.verification_status }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-normal italic">"{{ item.comment }}"</p>
+                    {% if item.evidence_attachments %}
+                    <div class="pt-2">
+                        {% for evidence in item.evidence_attachments %}
+                        <a href="{{ url_for('static', filename='uploads/' + evidence.file_secure_url) }}" target="_blank">
+                            <img src="{{ url_for('static', filename='uploads/' + evidence.file_secure_url) }}">
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="h-full flex flex-col items-center justify-center text-center text-slate-500 py-6">
+                    <p class="text-[11px] mb-3">No incident logs recorded.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-4 pt-4 border-t border-slate-800/80">
+                <a href="{{ url_for('citizen.submit_report', project_id=project.id) }}" 
+                   class="w-full inline-flex justify-center items-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 py-2.5 text-xs font-bold hover:bg-emerald-500/20 transition-all">
+                   Submit New Incident Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

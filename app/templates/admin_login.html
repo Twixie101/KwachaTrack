@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center">
+    <form method="POST" class="bg-slate-900 p-8 rounded-2xl border border-slate-800 w-full max-w-sm">
+        <h2 class="text-white font-bold mb-6">Admin Access Gate</h2>
+        <input type="password" name="key" placeholder="Enter Admin Key" 
+               class="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-white mb-4">
+        <button type="submit" class="w-full bg-emerald-600 py-2 rounded-lg text-white font-bold">Authenticate</button>
+    </form>
+</div>
+{% endblock %}

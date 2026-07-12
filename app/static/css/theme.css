@@ -1,0 +1,55 @@
+/* app/static/css/theme.css */
+
+/* High-contrast system adjustments */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+body {
+    background-color: #0b0c10;
+    color: #c5c6c7;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism panel configurations */
+.glass-card {
+    background: rgba(255, 255, 255, 0.02) !important;
+    backdrop-filter: blur(16px) saturate(120%);
+    -webkit-backdrop-filter: blur(16px) saturate(120%);
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Custom layout typography modifiers */
+.micro-text {
+    font-size: 0.75rem;
+}
+
+.tracking-wide {
+    letter-spacing: 1.5px;
+}
+
+/* Customized scrollbar design for the civic data lists */
+.style-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.style-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+.style-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+}
+.style-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #009e49;
+}
+
+/* Ensure clean display on mobile views */
+@media (max-width: 768px) {
+    .metric-value {
+        font-size: 1.6rem !important;
+    }
+    .glass-card {
+        padding: 1.5rem !important;
+    }
+}
